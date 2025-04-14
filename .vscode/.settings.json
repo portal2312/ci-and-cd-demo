@@ -1,3 +1,4 @@
 {
-  "python-envs.pythonProjects": []
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
