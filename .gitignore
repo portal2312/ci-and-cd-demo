@@ -1,0 +1,17 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Django default database
+db.sqlite3
+
+# VSCode local configurations
+.vscode/*.json
+!.vscode/.*.json
