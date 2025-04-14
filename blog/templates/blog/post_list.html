@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Post List</title>
+  </head>
+  <body>
+    <h1>Posts</h1>
+    {% if user.is_authenticated %}
+    <div>
+      <p>Hello, {{ user.username }}</p>
+      <form action="{% url 'logout' %}" method="post" style="display: inline">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+      </form>
+    </div>
+    {% else %}
+    <a href="{% url 'login' %}">Login</a>
+    {% endif %} {% for post in posts %}
+    <div>
+      <h2>{{ post.title }}</h2>
+      <p>{{ post.content }}</p>
+      <small>{{ post.created_at }}</small>
+    </div>
+    {% empty %}
+    <p>No posts yet.</p>
+    {% endfor %}
+  </body>
+</html>
