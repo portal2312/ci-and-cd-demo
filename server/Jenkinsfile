@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'ci-and-cd-demo-app'
+        NEXUS_REPO_URL = "${NEXUS_HOST}/repository/${NEXUS_REPO}"
+        NEXUS_CREDENTIALS_ID = 'ci-and-cd-demo-personal-access-token-credentials' // Jenkins에 등록한 크리덴셜 ID
+    }
+
+    stages {
+        stage('Clean up') {
+            steps {
+                sh 'docker image prune -f'
+            }
+        }
+
+        stage('Download Docker image from Nexus') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: env.NEXUS_CREDENTIALS_ID, usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                    sh """
+                        curl -u $NEXUS_USER:$NEXUS_PASS -O $NEXUS_REPO_URL/${IMAGE_NAME}.tar
+                        docker load -i ${IMAGE_NAME}.tar
+                    """
+                }
+            }
+        }
+
+        stage('Run Docker container') {
+            steps {
+                sh """
+                    docker stop ${IMAGE_NAME} || true
+                    docker rm ${IMAGE_NAME} || true
+                    docker run -d --name ${IMAGE_NAME} -p 8000:8000 ${IMAGE_NAME}:latest
+                """
+            }
+        }
+    }
+}
