@@ -1,6 +1,14 @@
 name: ci-and-cd-demo
 
 services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
   nexus:
     image: sonatype/nexus3
     container_name: nexus
