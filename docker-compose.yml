@@ -1,0 +1,14 @@
+name: ci-and-cd-demo
+
+services:
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus
+    ports:
+      - "8081:8081"
+    volumes:
+      - nexus-data:/nexus-data
+    restart: unless-stopped
+
+volumes:
+  nexus-data:
