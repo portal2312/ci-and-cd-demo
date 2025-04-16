@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Clean up') {
             steps {
-                sh 'docker image prune -f'
+                sh 'sudo docker image prune -f'
             }
         }
 
@@ -19,7 +19,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: env.NEXUS_CREDENTIALS_ID, usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
                     sh """
                         curl -u $NEXUS_USER:$NEXUS_PASS -O $NEXUS_REPO_URL/${IMAGE_NAME}.tar
-                        docker load -i ${IMAGE_NAME}.tar
+                        sudo docker load -i ${IMAGE_NAME}.tar
                     """
                 }
             }
@@ -28,9 +28,9 @@ pipeline {
         stage('Run Docker container') {
             steps {
                 sh """
-                    docker stop ${IMAGE_NAME} || true
-                    docker rm ${IMAGE_NAME} || true
-                    docker run -d --name ${IMAGE_NAME} -p 8000:8000 ${IMAGE_NAME}:latest
+                    sudo docker stop ${IMAGE_NAME} || true
+                    sudo docker rm ${IMAGE_NAME} || true
+                    sudo docker run -d --name ${IMAGE_NAME} -p 8000:8000 ${IMAGE_NAME}:latest
                 """
             }
         }
