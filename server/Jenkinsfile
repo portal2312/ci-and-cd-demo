@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'ci-and-cd-demo-app'
         NEXUS_REPO_URL = "${NEXUS_HOST}/repository/${NEXUS_REPO}"
-        NEXUS_CREDENTIALS_ID = 'ci-and-cd-demo-personal-access-token-credentials' // Jenkins에 등록한 크리덴셜 ID
+        NEXUS_CREDENTIALS_ID = 'ci-and-cd-demo-nexus-credentials' // Jenkins에 등록한 크리덴셜 ID
     }
 
     stages {
