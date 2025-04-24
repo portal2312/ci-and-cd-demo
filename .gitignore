@@ -6,7 +6,7 @@ dist/
 wheels/
 *.egg-info
 *.bak
-* copy.*
+* copy*
 
 # Virtual environments
 .venv

@@ -7,10 +7,26 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: [ci-and-cd-demo-runner]
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+
+      - name: Build client
+        working-directory: client
+        run: |
+          source $NVM_DIR/nvm.sh
+          yarn install --immutable
+          yarn run build
+
+      - name: Archive client build
+        run: tar -cvf client/ci-and-cd-demo-client-build.tar -C client/dist .
+
+      - name: Upload client build to Nexus
+        run: |
+          curl -v -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
+            --upload-file client/ci-and-cd-demo-client-build.tar \
+            ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/ci-and-cd-demo-client-build.tar
 
       - name: Set up Python
         uses: actions/setup-python@v5
