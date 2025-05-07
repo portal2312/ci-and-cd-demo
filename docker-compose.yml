@@ -3,20 +3,26 @@ name: ci-and-cd-demo
 
 # https://docs.docker.com/reference/compose-file/services/
 services:
-  client:
+  actions-runner:
     # https://docs.docker.com/reference/compose-file/services/#build
     build:
-      context: ./client
+      context: ./actions-runner
       dockerfile: Dockerfile
-    # https://docs.docker.com/reference/compose-file/services/#ports
-    ports:
-      - 4173:4173
-    # https://docs.docker.com/reference/compose-file/services/#tty
+      args:
+        RUNNER_VERSION: ${RUNNER_VERSION}
     tty: true
-    # https://docs.docker.com/reference/compose-file/services/#stdin_open
     stdin_open: true
-    # https://docs.docker.com/reference/compose-file/services/#restart
     restart: unless-stopped
+    # https://docs.docker.com/reference/compose-file/services/#volumes
+    volumes:
+      - actions-runner-data:/actions-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    # https://docs.docker.com/reference/compose-file/services/#environment
+    environment:
+      - RUNNER_URL=${RUNNER_URL}
+      - RUNNER_TOKEN=${RUNNER_TOKEN}
+      - RUNNER_NAME=${RUNNER_NAME}
+      - RUNNER_LABELS=${RUNNER_LABELS}
 
   jenkins:
     build:
@@ -25,22 +31,10 @@ services:
     ports:
       - 8080:8080
       - 50000:50000
-    # https://docs.docker.com/reference/compose-file/services/#volumes
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
-
-  runner:
-    build:
-      context: ./runner
-      dockerfile: Dockerfile
-    tty: true
-    stdin_open: true
-    restart: unless-stopped
-    # https://docs.docker.com/reference/compose-file/services/#environment
-    environment:
-      - RUNNER_TOKEN=${RUNNER_TOKEN}
 
   server:
     build:
@@ -61,5 +55,9 @@ services:
 
 # https://docs.docker.com/reference/compose-file/volumes/
 volumes:
+  # 다음과 같은 이유로 볼륨을 사용:
+  # - Runner 의 config.sh 실행 후, 생성 된 파일 보존을 위해
+  # - Runner 의 Token 유지를 위해
+  actions-runner-data:
   nexus-data:
   jenkins_data:
