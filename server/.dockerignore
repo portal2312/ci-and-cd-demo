@@ -1,3 +1,12 @@
+# Git files
+**/.git*
+
+# Docker files
+**/.dockerignore
+**/docker-compose*
+**/compose*
+**/Dockerfile*
+
 # Python compile file (.pyc, .pyo)
 *.py[oc]
 

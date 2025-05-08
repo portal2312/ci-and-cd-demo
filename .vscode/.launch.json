@@ -19,6 +19,30 @@
       "django": true,
       "autoStartBrowser": false,
       "program": "${workspaceFolder}/server/manage.py"
+    },
+    {
+      "name": "Server: Attach to 5678",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "0.0.0.0",
+        "port": 5678
+      },
+      "justMyCode": false,
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/server",
+          "remoteRoot": "."
+        },
+        {
+          "localRoot": "${workspaceFolder}/server/.venv/lib/python3.13/site-packages",
+          "remoteRoot": "/usr/local/lib/python3.13/site-packages"
+        },
+        {
+          "localRoot": "${env:HOME}/.local/share/uv/python/cpython-3.13.2-macos-aarch64-none/lib/python3.13",
+          "remoteRoot": "/usr/local/lib/python3.13"
+        }
+      ]
     }
   ]
 }

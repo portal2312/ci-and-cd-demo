@@ -42,3 +42,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# NVM version file
+.nvmrc
+
+# Ignore the generated GraphQL schema file
+src/gql
+

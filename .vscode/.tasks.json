@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Server: export_schema",
+      "type": "shell",
+      "problemMatcher": [],
+      "command": "docker compose -f docker-compose.dev.yml exec server python manage.py export_schema --path schema.graphql project.schema",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    }
+  ]
+}

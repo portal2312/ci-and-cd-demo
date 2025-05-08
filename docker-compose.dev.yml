@@ -1,4 +1,15 @@
 services:
   server:
+    build:
+      args:
+        - REQUIREMENT_FILENAME=requirements.dev.txt
+    ports:
+      - 5678:5678
     volumes:
       - ./server:/app
+    command:
+      [
+        "sh",
+        "-c",
+        "python -m debugpy --wait-for-client --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8000 --nothreading",
+      ]
