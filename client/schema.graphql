@@ -1,0 +1,14 @@
+"""Date with time (isoformat)"""
+scalar DateTime
+
+"""Post(id, title, content, created_at, description)"""
+type Post {
+  title: String!
+  content: String!
+  createdAt: DateTime!
+  description: String
+}
+
+type Query {
+  posts: [Post!]!
+}

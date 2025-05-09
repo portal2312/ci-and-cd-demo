@@ -26,7 +26,7 @@
 **/db.sqlite3
 
 # strawberry-graphql-django: export_schema out file
-**/schema.graphql
+server/schema.graphql
 
 # pytest cache folder
 **/.pytest_cache

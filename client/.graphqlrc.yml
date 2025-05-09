@@ -1,10 +1,9 @@
 schema:
-  - ../server/schema.graphql
-  - http://localhost:8000/graphql/
+  - "${GRAPHQL_SCHEMA:http://localhost:8000/graphql/}"
 
 documents:
   - src/**/*.tsx
-#   - src/**/*.graphql
+  # - src/**/*.graphql
 
 generates:
   ./src/gql/:
