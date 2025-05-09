@@ -74,6 +74,7 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | b
 # Set up UV
 RUN curl -LsSf https://astral.sh/uv/0.7.2/install.sh | sh && \
     ~/.local/bin/uv python install 3.13.2
+ENV PATH="/home/${USERNAME}/.cargo/bin:$PATH"
 
 # Set up GitHub Actions Runner
 # 1. Runner image: Linux

@@ -14,6 +14,7 @@ jobs:
           uv venv
           uv pip install --upgrade pip
           uv pip install -r requirements.dev.txt
+        # shell: bash --login {0}
 
   server-test:
     runs-on: [ci-and-cd-demo-runner]
