@@ -4,21 +4,74 @@ on:
     branches: [main]
 
 jobs:
-  client-build:
+  server-build:
     runs-on: [ci-and-cd-demo-runner]
     steps:
       - uses: actions/checkout@v4
-      - name: Build client
-        working-directory: client
+      - name: Install server dependencies
+        working-directory: server
         run: |
-          source $NVM_DIR/nvm.sh
-          yarn --version
-          yarn install --immutable
-          yarn run build
-      - name: Archive client dist
-        run: tar -cvf client/dist.tar -C client/dist .
-      - name: Upload client artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: client-dist
-          path: client/dist.tar
+          uv venv
+          uv pip install --upgrade pip
+          uv pip install -r requirements.dev.txt
+
+  server-test:
+    runs-on: [ci-and-cd-demo-runner]
+    needs: server-build
+    env:
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start PostgreSQL
+        run: |
+          sudo docker run -d --rm \
+            --name ci-and-cd-demo-actions-runner-postgres \
+            -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+            -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+            -e POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+            -p ${{ secrets.POSTGRES_PORT }}:5432 \
+            postgres:15
+      - name: Run migrations
+        working-directory: server
+        run: uv run python manage.py migrate --noinput
+      - name: Export GraphQL schema
+        working-directory: server
+        run: uv run python manage.py export_schema --path schema.graphql project.schema
+      - name: Run tests
+        working-directory: server
+        run: uv run pytest --maxfail=1 --disable-warnings -q
+
+  server-deploy:
+    runs-on: [ci-and-cd-demo-runner]
+    needs: server-test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive server
+        run: |
+          tar --exclude='**/.dockerignore' \
+            --exclude='**/docker-compose*' \
+            --exclude='**/compose*' \
+            --exclude='**/Dockerfile*' \
+            --exclude='*.py[oc]' \
+            --exclude='*.egg-info' \
+            --exclude='*.bak' \
+            --exclude='* copy*' \
+            --exclude='.env' \
+            --exclude='**/.vscode' \
+            --exclude='!**/.vscode/.*.json' \
+            --exclude='**/__pycache__' \
+            --exclude='**/db.sqlite3' \
+            --exclude='**/schema.graphql' \
+            --exclude='**/.pytest_cache' \
+            --exclude='**/.venv' \
+            --exclude='server.tar' \
+            -cvf server.tar --directory server .
+      - name: Upload server tar to Nexus
+        run: |
+          curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
+            --upload-file server.tar \
+            ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
