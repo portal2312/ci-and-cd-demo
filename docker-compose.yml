@@ -6,8 +6,9 @@ services:
   actions-runner:
     # https://docs.docker.com/reference/compose-file/services/#build
     build:
+      # https://docs.docker.com/reference/compose-file/build/#context
       context: ./actions-runner
-      dockerfile: Dockerfile
+      # https://docs.docker.com/reference/compose-file/build/#args
       args:
         RUNNER_VERSION: ${RUNNER_VERSION}
     # https://docs.docker.com/reference/compose-file/services/#tty
@@ -24,13 +25,12 @@ services:
     environment:
       - RUNNER_URL=${RUNNER_URL}
       - RUNNER_TOKEN=${RUNNER_TOKEN}
-      - RUNNER_NAME=${RUNNER_NAME}
-      - RUNNER_LABELS=${RUNNER_LABELS}
+      - RUNNER_NAME=${RUNNER_NAME:-ci-and-cd-demo-runner}
+      - RUNNER_LABELS=${RUNNER_LABELS:-ci-and-cd-demo-runner}
 
   jenkins:
     build:
       context: ./jenkins
-      dockerfile: Dockerfile
     ports:
       - 8080:8080
       - 50000:50000
@@ -42,10 +42,17 @@ services:
   server:
     build:
       context: ./server
-      dockerfile: Dockerfile
     ports:
       - 8000:8000
-    restart: unless-stopped
+    # https://docs.docker.com/reference/compose-file/services/#depends_on
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_HOST=${POSTGRES_HOST:-db}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
 
   nexus:
     # https://docs.docker.com/reference/compose-file/services/#image
@@ -56,11 +63,25 @@ services:
       - nexus-data:/nexus-data
     restart: unless-stopped
 
+  db:
+    build:
+      context: ./db
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_INITDB_ARGS=${POSTGRES_INITDB_ARGS:-"--encoding=UTF8 --lc-collate=ko_KR.utf8 --lc-ctype=ko_KR.utf8"}
+
 # https://docs.docker.com/reference/compose-file/volumes/
 volumes:
-  # 다음과 같은 이유로 볼륨을 사용:
+  # NOTE: Actions Runner 작업 경로를 최상위 볼륨으로 설정하기
   # - Runner 의 config.sh 실행 후, 생성 된 파일 보존을 위해
   # - Runner 의 Token 유지를 위해
   actions-runner-data:
   nexus-data:
   jenkins_data:
+  db-data:

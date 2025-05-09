@@ -16,6 +16,8 @@ packaging==25.0
     # via
     #   gunicorn
     #   strawberry-graphql
+psycopg==3.2.7
+    # via ci-and-cd-damo (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via strawberry-graphql
 six==1.17.0

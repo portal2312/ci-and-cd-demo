@@ -10,7 +10,7 @@
 # Python compile file (.pyc, .pyo)
 *.py[oc]
 
-# egg package infomation folder
+# egg package info folder
 *.egg-info
 
 # Backup file

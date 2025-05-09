@@ -66,6 +66,8 @@ prompt-toolkit==3.0.51
     # via ipython
 psutil==7.0.0
     # via ipykernel
+psycopg==3.2.7
+    # via ci-and-cd-damo (pyproject.toml)
 ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
