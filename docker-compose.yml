@@ -37,21 +37,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
-  server:
-    build:
-      context: ./server
-    ports:
-      - 8000:8000
-    # https://docs.docker.com/reference/compose-file/services/#depends_on
-    depends_on:
-      - db
-    environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-postgres}
-      - POSTGRES_HOST=${POSTGRES_HOST:-db}
-      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
-
   nexus:
     # https://docs.docker.com/reference/compose-file/services/#image
     image: sonatype/nexus3
@@ -61,18 +46,18 @@ services:
       - nexus-data:/nexus-data
     restart: unless-stopped
 
-  db:
+  deploy:
     build:
-      context: ./db
-    ports:
-      - ${POSTGRES_PORT:-5432}:5432
+      context: ./deploy
+    tty: true
+    stdin_open: true
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - deploy_data:/home/appuser
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-postgres}
-      - POSTGRES_INITDB_ARGS=${POSTGRES_INITDB_ARGS:-"--encoding=UTF8 --lc-collate=ko_KR.utf8 --lc-ctype=ko_KR.utf8"}
+      - NEXUS_HOST=${NEXUS_HOST:-nexus}
+      - NEXUS_PASSWORD=${NEXUS_PASSWORD}
+      - NEXUS_USER=${NEXUS_USER:-admin}
+      - NEXUS_REPO=${NEXUS_REPO}
 
 # https://docs.docker.com/reference/compose-file/volumes/
 volumes:
@@ -82,4 +67,4 @@ volumes:
   actions-runner-data:
   nexus-data:
   jenkins_data:
-  db-data:
+  deploy_data:

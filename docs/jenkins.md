@@ -213,3 +213,25 @@ pipeline {
 
 - [`server/Dockerfile`](#dockerfile) 에서 `sudo` 를 설치하고 `jenkins` 계정에 비밀번호 없이 `sudo` 실행할 권한을 부여합니다.
 - [`server/Jenkinsfile`](#jenkinsfile) 에서 `docker` 명령어를 `sudo docker` 로 변경합니다.
+
+## Set up SSH key by deploy
+
+Generate SSH key by `jenkins-deploy`:
+
+```bash
+ssh-keygen -t ed25519 -C "jenkins-deploy" -f ~/.ssh/jenkins_deploy
+```
+
+- `-t`: key 알고리즘 (default: `rsa`, 요즘은 `ed25519` 를 선호)
+- `-C`: key 설명
+- `-f`: 파일 경로/이름
+
+Show, generated public SSH key by `jenkins-deploy`:
+
+```bash
+cat ~/.ssh/jenkins_deploy
+cat ~/.ssh/jenkins_deploy.pub
+```
+
+- `~/.ssh/jenkins_deploy`: Jenkins 관리/Credentials 에서 등록합니다.
+- `~/.ssh/jenkins_deploy.pub`: `deploy` container 에서 **appuser** 사용자의 `~/.ssh/authorized_keys` 에 추가합니다.
