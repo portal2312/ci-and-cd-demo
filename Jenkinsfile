@@ -5,9 +5,7 @@ pipeline {
       steps {
         sshagent(['jenkins-deploy']) {
           sh '''
-            ssh -o StrictHostKeyChecking=no appuser@deploy '
-              /app/deploy_from_nexus.sh
-            '
+            ssh -o StrictHostKeyChecking=no appuser@deploy 'bash -l -c "/app/deploy_from_nexus.sh"'
           '''
         }
       }

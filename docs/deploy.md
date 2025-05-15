@@ -10,7 +10,7 @@ touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys
 echo 'GENERATED_PUBLIC_SSH_KEY' >> ~/.ssh/authorized_keys
 ```
 
-- `'GENERATED_PUBLIC_SSH_KEY'`: Show, [generated public SSH key by `jenkins-deploy`](./jenkins.md#set-up-ssh-key-by-deploy)
+- `'GENERATED_PUBLIC_SSH_KEY'`: Show, [generated public SSH key by `jenkins-deploy`](./jenkins.md#)
 
 Check:
 

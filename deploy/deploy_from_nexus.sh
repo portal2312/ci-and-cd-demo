@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Check environment variables
+if [[ -z "$NEXUS_HOST" || -z "$NEXUS_USER" || -z "$NEXUS_PASSWORD" || -z "$NEXUS_REPO" ]]; then
+  echo "Required environment variables (NEXUS_HOST, NEXUS_USER, NEXUS_PASSWORD, NEXUS_REPO) are missing."
+  exit 1
+fi
+
 CLIENT_TAR="client-dist.tar"
 SERVER_TAR="server.tar"
 

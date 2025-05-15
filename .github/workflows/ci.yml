@@ -102,24 +102,7 @@ jobs:
           name: client-dist
           path: client/client-dist.tar
 
-  server-deploy:
-    runs-on: [ci-and-cd-demo-runner]
-    needs:
-      - server-test
-      - client-build
-    steps:
-      - name: Download server artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: server-dist
-          path: server/
-      - name: Upload server to Nexus
-        run: |
-          curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
-          --upload-file server/server.tar \
-          ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
-
-  client-deploy:
+  deploy:
     runs-on: [ci-and-cd-demo-runner]
     needs:
       - client-build
@@ -135,3 +118,13 @@ jobs:
           curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
             --upload-file client/client-dist.tar \
             ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/client-dist.tar
+      - name: Download server artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: server-dist
+          path: server/
+      - name: Upload server to Nexus
+        run: |
+          curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
+          --upload-file server/server.tar \
+          ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
