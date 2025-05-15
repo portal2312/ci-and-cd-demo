@@ -1,4 +1,29 @@
 services:
+  actions-runner:
+    volumes:
+      # NOTE: 반드시 실행 권한이 필요합니다.
+      - ./actions-runner/entrypoint.sh:/actions-runner/entrypoint.sh
+
+  deploy:
+    volumes:
+      # NOTE: 반드시 실행 권한이 필요합니다.
+      - ./deploy/deploy_from_nexus.sh:/app/deploy_from_nexus.sh
+      # NOTE: 반드시 실행 권한이 필요합니다.
+      - ./deploy/entrypoint.sh:/app/entrypoint.sh
+
+  db:
+    build:
+      context: ./db
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_INITDB_ARGS=${POSTGRES_INITDB_ARGS:-"--encoding=UTF8 --lc-collate=ko_KR.utf8 --lc-ctype=ko_KR.utf8"}
+
   server:
     build:
       context: ./server
@@ -24,19 +49,6 @@ services:
         "-c",
         "python -m debugpy --wait-for-client --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8000 --nothreading",
       ]
-
-  db:
-    build:
-      context: ./db
-    ports:
-      - ${POSTGRES_PORT:-5432}:5432
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-postgres}
-      - POSTGRES_INITDB_ARGS=${POSTGRES_INITDB_ARGS:-"--encoding=UTF8 --lc-collate=ko_KR.utf8 --lc-ctype=ko_KR.utf8"}
 
 volumes:
   db_data:

@@ -102,3 +102,17 @@ jobs:
             --upload-file server/ci-and-cd-demo-app.tar \
             ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/ci-and-cd-demo-app.tar
 ```
+
+## Etc
+
+파일(컴포넌트) 목록 조회:
+
+```bash
+curl -u ${NEXUS_USER}:${NEXUS_PASSWORD} ${NEXUS_HOST}/service/rest/v1/components?repository=${NEXUS_REPO}
+```
+
+파일(컴포넌트) 삭제:
+
+```bash
+curl -u ${NEXUS_USER}:${NEXUS_PASSWORD} -X DELETE ${NEXUS_HOST}/service/rest/v1/components/${COMPONENT_ID}
+```

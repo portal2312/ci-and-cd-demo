@@ -226,17 +226,17 @@ pipeline {
 
 4. Install **SSH Agent** or **SSH Agent Plugin**
 
-### Set up SSH key for using deploy
+### Generate SSH keys
 
-Generate SSH key by `jenkins-deploy`:
+Generate SSH key `jenkins-deploy`:
 
 ```bash
 ssh-keygen -t ed25519 -C "jenkins-deploy" -f ~/.ssh/jenkins_deploy
 ```
 
-- `-t`: key 알고리즘 (default: `rsa`, 요즘은 `ed25519` 를 선호)
-- `-C`: key 설명
-- `-f`: 파일 경로/이름
+- `-t`: Algorithm (default: `rsa`, 요즘은 `ed25519` 를 선호)
+- `-C`: Comment
+- `-f`: Output keyfile
 
 Show, generated public SSH key by `jenkins-deploy`:
 

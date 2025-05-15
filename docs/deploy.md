@@ -5,26 +5,27 @@
 Set up:
 
 ```bash
-mkdir -p ~/.ssh && chmod 700 ~/.ssh
-touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys
 echo 'GENERATED_PUBLIC_SSH_KEY' >> ~/.ssh/authorized_keys
 ```
 
-- `'GENERATED_PUBLIC_SSH_KEY'`: Show, [generated public SSH key by `jenkins-deploy`](./jenkins.md#)
+- `'GENERATED_PUBLIC_SSH_KEY'`: Public key of [Generated SSH keys](./jenkins.md#generate-ssh-keys)
 
-Check:
+> [!IMPORTANT]
+> non-root user SSH files and directories permissions:
+>
+> - `~/.ssh`: `drwx------`(700), `appuser:appuser`
+> - `~/.ssh/authorized_keys`: `-rw-------`(600), `appuser:appuser`
+
+### Test
+
+Connect to deploy container:
 
 ```bash
-cat ~/.ssh/authorized_keys
-ls -al ~/.ssh
+ssh -i ~/.ssh/jenkins_deploy appuser@deploy
 ```
 
-### Test SSH connect
+Execute to `/app/deploy_from_nexus.sh` on deploy container:
 
-1. Go to **jenkins** container
-
-2. Try ssh connect to `deploy` container:
-
-   ```bash
-   ssh -i ~/.ssh/jenkins_deploy appuser@deploy
-   ```
+```bash
+ssh -i ~/.ssh/jenkins_deploy -o StrictHostKeyChecking=no appuser@deploy 'bash -l -c "/app/deploy_from_nexus.sh"'
+```
