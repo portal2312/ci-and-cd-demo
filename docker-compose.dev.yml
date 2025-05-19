@@ -10,6 +10,8 @@ services:
       - ./deploy/deploy_from_nexus.sh:/app/deploy_from_nexus.sh
       # NOTE: 반드시 실행 권한이 필요합니다.
       - ./deploy/entrypoint.sh:/app/entrypoint.sh
+      - ./deploy/nginx.conf:/etc/nginx/nginx.conf
+      - ./deploy/gunicorn.conf.py:/app/gunicorn.conf.py
 
   db:
     build:

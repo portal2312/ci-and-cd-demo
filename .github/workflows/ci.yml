@@ -108,6 +108,15 @@ jobs:
       - client-build
       - server-test
     steps:
+      - name: Archive and Upload deploy to Nexus
+        run: |
+          tar --exclude='**/.dockerignore' \
+            --exclude='**/Dockerfile*' \
+            -cvf deploy/deploy.tar --directory deploy .
+          curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
+            --upload-file deploy/deploy.tar \
+            ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/deploy.tar
+          rm -rf deploy/deploy.tar
       - name: Download client artifact
         uses: actions/download-artifact@v4
         with:

@@ -56,8 +56,13 @@ services:
         - NEXUS_REPO=${NEXUS_REPO}
     tty: true
     stdin_open: true
+    ports:
+      - 80:80
+      - 443:443
     volumes:
+      # NOTE: SSH 설정 등 유지 한다
       - deploy_data:/home/appuser
+      # NOTE: 최초 한번만 배포 서버에 직접 파일을 업로드하고 이후는 해당 스크립트를 통해 업데이트 된다
       - deploy_from_nexus.sh:/app/deploy_from_nexus.sh
 
 # https://docs.docker.com/reference/compose-file/volumes/

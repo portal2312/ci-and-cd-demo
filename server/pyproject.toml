@@ -9,6 +9,8 @@ dependencies = [
     "gunicorn>=23.0.0",
     "psycopg>=3.2.7",
     "strawberry-graphql-django>=0.59.1",
+    "uvicorn>=0.34.2",
+    "uvicorn-worker>=0.3.0",
 ]
 
 [dependency-groups]

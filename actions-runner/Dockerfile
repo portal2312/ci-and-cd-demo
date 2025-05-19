@@ -36,27 +36,6 @@ RUN dnf config-manager --add-repo https://download.docker.com/linux/centos/docke
 
 RUN usermod -aG docker ${USERNAME}
 
-# Set up Python 3.13.2
-# RUN curl -O https://www.python.org/ftp/python/3.13.2/Python-3.13.2.tar.xz && \
-#     tar -xf Python-3.13.2.tar.xz && \
-#     cd Python-3.13.2 && \
-#     ./configure --enable-optimizations && \
-#     make altinstall && \
-#     ln -s /usr/local/bin/python3.13 /usr/local/bin/python && \
-#     rm -rf ../Python-3.13.2*
-
-# Set up PostgreSQL 15 (aarch64)
-# - `cat /etc/os-release`: Rocky-Linux-8, RHEL, RHEL8
-# - `uname -m`: aarch64
-# - GPG key base abs path: /etc/pki/rpm-gpg/PGDG-RPM-GPG-KEY-RHEL
-RUN dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-aarch64/pgdg-redhat-repo-latest.noarch.rpm && \
-    # HACK: Overwrite the GPG key file for "Bad GPG signature"
-    curl -sSL https://apt.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-AARCH64-RHEL -o /etc/pki/rpm-gpg/PGDG-RPM-GPG-KEY-RHEL && rpm --import /etc/pki/rpm-gpg/PGDG-RPM-GPG-KEY-RHEL && \
-    dnf -qy module disable postgresql && \
-    dnf -y install postgresql15-server postgresql15-contrib && \
-    echo "export PATH=$PATH:/usr/pgsql-15/bin" >> /etc/profile && \
-    dnf clean all
-
 # Set up UV
 # - https://docs.astral.sh/uv/configuration/environment/#uv_install_dir
 # - https://docs.astral.sh/uv/guides/integration/docker/#using-uv-in-docker
