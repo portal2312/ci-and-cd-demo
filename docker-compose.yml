@@ -18,6 +18,7 @@ services:
     stdin_open: true
     # https://docs.docker.com/reference/compose-file/services/#volumes
     volumes:
+      # NOTE: 설정과 생성 된 파일 보존을 위해
       - actions-runner-data:/actions-runner
       # NOTE: Local 에서 Docker 를 제어하기 위해
       - /var/run/docker.sock:/var/run/docker.sock

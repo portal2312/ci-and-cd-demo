@@ -1,8 +1,11 @@
 """Gunicorn configuration.
 
 Reference:
+    https://docs.gunicorn.org/en/latest/deploy.html#deploying-gunicorn
     https://docs.gunicorn.org/en/stable/settings.html#config-file
+    https://www.uvicorn.org/deployment/
     https://github.com/Kludex/uvicorn-worker
+    https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/gunicorn/
 """
 
 # https://docs.gunicorn.org/en/stable/settings.html#bind

@@ -39,66 +39,53 @@ volumes:
   deploy_data:
 ```
 
-## Configuration
+### `entrypoint.sh`
 
-### Set Up SSH authorized keys for jenkins
+Docker 내부에 있는 서비스를 실행 합니다.
 
-Set up:
+[This file](../deploy/entrypoint.sh) is used last in the Dockerfile.
 
-```bash
-echo 'GENERATED_PUBLIC_SSH_KEY' >> ~/.ssh/authorized_keys
-```
+> [!NOTE]
+> Generally, Docker does not use systemd.
 
-- `'GENERATED_PUBLIC_SSH_KEY'`: Public key of [Generated SSH keys](./jenkins-set-up-pipeline-ssh-command.md#set-up-ssh-keys)
+### `deploy_from_nexus.sh`
+
+패치와 서비스를 실행 합니다.
+
+[이 파일](../deploy/deploy_from_nexus.sh)은 Jenkins 서비스에서 [Jenkinsfile](../Jenkinsfile) 이 설정 된 [Pipeline](./jenkins-set-up-pipeline-ssh-command.md#set-up-pipeline) 빌드 시, 실행 됩니다.
 
 > [!IMPORTANT]
-> non-root user SSH files and directories permissions:
+> 최초 한번은 수동으로 이 파일을 Upload 를 해주십시오.  
+> 이 후 실행 시, 자동으로 자신을 업데이트 합니다.
+
+### `gunicorn.conf.py`
+
+Gunicorn basic configuration file.
+
+> [!TIP]
+> Production is [Gunicorn](https://docs.gunicorn.org/en/latest/deploy.html#deploying-gunicorn) + [Uvicorn](https://www.uvicorn.org/deployment/) + [uvicorn-worker](https://github.com/Kludex/uvicorn-worker)
+
+### `nginx.conf`
+
+Nginx basic configuration file.
+
+## Configuration
+
+### Set up SSH authorized keys for jenkins
+
+`jenkins` container 로부터 생성 된 SSH public key 를 `deploy` container 에서 `appuser` 사용자의 authorized_keys 에 등록합니다:
+
+```bash
+echo 'JENKINS_SSH_PUBLIC_KEY' >> ~/.ssh/authorized_keys
+```
+
+- `JENKINS_SSH_PUBLIC_KEY`: [`~/.ssh/jenkins_deploy.pub`](./jenkins-set-up-pipeline-ssh-command.md#sshjenkins_deploypub) text from `jenkins` container
+
+> [!IMPORTANT]
+> SSH files and directories permissions of `appuser` user:
 >
 > - `~/.ssh`: `drwx------`(700), `appuser:appuser`
 > - `~/.ssh/authorized_keys`: `-rw-------`(600), `appuser:appuser`
 
-Test:
-
-Go to **jenkins** container, and try SSH connect to **deploy** container:
-
-```bash
-ssh -i ~/.ssh/jenkins_deploy appuser@deploy
-```
-
-#### Using SSH to execute commands
-
-Go to **jenkins** container, and try execute to `/app/deploy_from_nexus.sh` on **deploy** container:
-
-```bash
-ssh -i ~/.ssh/jenkins_deploy -o StrictHostKeyChecking=no appuser@deploy 'bash -l -c "/app/deploy_from_nexus.sh"'
-```
-
-## entrypoint.sh
-
-서비스 실행을 위해 사용한다.
-
-## deploy_from_nexus.sh
-
-배포와 서비스 실행을 하는 파일이다.
-
-이 파일은 [Jenkins 에 등록 된 특정 pipeline 의 설정](./jenkins-set-up-pipeline-ssh-command.md#set-up-pipeline)에서 [Jenkinsfile](../Jenkinsfile) 파일에 의해 실행 된다.
-
-## Services
-
-### WEB
-
-### WAS
-
-Start:
-
-```bash
-python -m gunicorn --config=/app/gunicorn.conf.py --pythonpath=/app/server project.asgi:application
-```
-
-- [`--config`](https://docs.gunicorn.org/en/stable/settings.html#config): [`gunicorn.conf.py`](../deploy/gunicorn.conf.py) gunicorn 설정 경로를 입력하기
-- [`--pythonpath`](https://docs.gunicorn.org/en/stable/settings.html#pythonpath): 서비스의 최상위 경로를 입력하기
-
 > [!NOTE]
-> Production is [Gunicorn](https://docs.gunicorn.org/en/latest/deploy.html#deploying-gunicorn) + [Uvicorn](https://www.uvicorn.org/deployment/) + [uvicorn-worker](https://github.com/Kludex/uvicorn-worker)
-
-### DB
+> Already, the `/home/appuser` directory is docker compose global volume. Refer to [docker-compose.yml](../docker-compose.yml).

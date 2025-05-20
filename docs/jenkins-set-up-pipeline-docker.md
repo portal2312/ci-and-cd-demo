@@ -1,4 +1,4 @@
-# Jenkins Set up pipeline for Docker
+# Jenkins Set up pipeline with Docker
 
 ## Requirements
 

@@ -1,4 +1,4 @@
-# Jenkins Set up pipeline for SSH Command
+# Jenkins Set up pipeline with SSH Command
 
 ## Requirements
 
@@ -18,7 +18,7 @@ Refer to [this](./jenkins.md).
 
 ## Configuration
 
-### Set up SSH keys
+### Generate SSH keys
 
 Go to the `jenkins` user at the `jenkins` container.
 
@@ -39,16 +39,53 @@ cat ~/.ssh/jenkins_deploy
 cat ~/.ssh/jenkins_deploy.pub
 ```
 
-- `~/.ssh/jenkins_deploy`: Jenkins 관리/Credentials 에서 등록합니다.
-- `~/.ssh/jenkins_deploy.pub`: `deploy` container 에서 **appuser** 사용자의 `~/.ssh/authorized_keys` 에 추가합니다.
+#### `~/.ssh/jenkins_deploy`
 
-### Set Up SSH authorized keys on deploy
+SSH 접속을 시도하는 [Jenkinsfile](../Jenkinsfile) 을 설정한 [Pipeline](#set-up-pipeline) 에서 빌드 시, 사용되는 Private Key 입니다.
 
-Refer to [this](./deploy.md#set-up-ssh-authorized-keys-for-jenkins).
+#### `~/.ssh/jenkins_deploy.pub`
+
+`deploy` container 에서 접근 및 명령어를 실행할 **appuser** 사용자의 `~/.ssh/authorized_keys` 에서 사용되는 Public Key 입니다.
+
+#### Set up SSH authorized keys to deploy
+
+설정은 [Set up SSH authorized keys for jenkins](./deploy.md#set-up-ssh-authorized-keys-for-jenkins) 을 참조 바랍니다.
+
+Test, try connect to **deploy** container:
+
+```bash
+ssh -i ~/.ssh/jenkins_deploy appuser@deploy
+```
+
+Test, try execute `/app/deploy_from_nexus.sh` to **deploy** container:
+
+```bash
+ssh -i ~/.ssh/jenkins_deploy -o StrictHostKeyChecking=no appuser@deploy 'bash -l -c "/app/deploy_from_nexus.sh"'
+```
+
+### Set up SSH Private Key to Credentials
+
+생성 된 `~/.ssh/jenkins_deploy` 을 Jenkins 서비스에 등록합니다.
+
+1. Go to **Dashboard**
+
+2. Go to **Jenkins 관리**
+
+3. Go to **Credentials**
+
+4. Click **(global)** at **Stores scoped to Jenkins** table **Domains** column
+
+5. Click **Add Credentials** and **Save** for GitHub Personal Access Token Click:
+
+   - Kind: `SSH Username with private key`
+   - ID: _jenkins_deploy_
+   - Username: _appuser_ (try connect a user)
+   - Private Key
+     - [x] Enter directly
+       - Click **Add** button at **key** item
+         - Textarea: Paste the `~/.ssh/jenkins_deploy` text
 
 ### Set up Pipeline
-
-Go to [`http://localhost:8080`](http://localhost:8080).
 
 1. Go to **Dashboard**
 

@@ -24,6 +24,7 @@ services:
       - 50000:50000
     volumes:
       - jenkins_data:/var/jenkins_home
+      # NOTE: Local 에서 Docker 를 제어하기 위해
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
@@ -34,7 +35,7 @@ volumes:
 ```
 
 > [!NOTE]
-> 여기서 `jenkins` container 에서 실행되는 Docker 의 image 나 container 를 나의 로컬에서 제어하기 위해 `/var/run/docker.sock:/var/run/docker.sock` volume 을 정의합니다.
+> 해당 container 에서 실행되는 Docker 의 image 나 container 를 나의 로컬에서 제어하기 위해 `/var/run/docker.sock:/var/run/docker.sock` volume 을 정의합니다.
 
 Up docker compose:
 
@@ -93,5 +94,5 @@ Input to getting initial admin password.
 
 ## Set up Pipeline
 
-- [Set up pipeline docker](./jenkins-set-up-pipeline-docker.md)
-- [Set up pipeline ssh command](./jenkins-set-up-pipeline-ssh-command.md)
+- [Set up Pipeline with Docker](./jenkins-set-up-pipeline-docker.md)
+- [Set up Pipeline with SSH Command](./jenkins-set-up-pipeline-ssh-command.md)

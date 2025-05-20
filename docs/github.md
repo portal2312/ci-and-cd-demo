@@ -4,82 +4,26 @@
 
 Create `ci-and-cd-demo` public Repository.
 
-And, push your local project:
+And, push your local project to `git://github.com/YOUR_USERNAME/ci-and-cd-demo.git`:
 
 ```bash
 git init
-git remote add origin git://github.com/yourusername/ci-and-cd-demo.git
+git remote add origin git://github.com/YOUR_USERNAME/ci-and-cd-demo.git
 git add .
 git commit -m "Initial commit"
 git push -u origin main
 ```
 
-## Set up GitHub Actions (CI)
+## Set up GitHub Workflows for CI
 
-CI steps:
+By a runner:
 
-- Install Python dependencies
-- Django migrate
-- Run tests
-- Build `ci-and-cd-demo-app:latest` Docker image from `./server`
-- Save Docker image as tar file
-- Upload Docker image to Nexus
+- [GitHub Actions Runner](../.github/workflows/ci.yml)
+- [Self Hosted Runner](../.github/workflows/ci-self-hosted-runner.yml)
 
-> [!NOTE]
-> CI: build, tests, lint, migrate.
+## Set up GitHub Actions
 
-Add `.github/workflows/ci.yml`:
-
-```yml
-name: ci-and-cd-demo-ci
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          # 최신 버전은 일부 라이브러리나 GitHub Actions 이미지에서 완전히 지원 안 될 수도 있으니 주의하기.
-          python-version: 3.11
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r server/requirements.txt
-          pip install pytest pytest-django
-
-      - name: Run migrations
-        run: python server/manage.py migrate --noinput
-
-      - name: Run tests
-        run: pytest --config-file server/pytest.ini server
-
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        run: docker build -f server/Dockerfile -t ci-and-cd-demo-app:latest ./server
-
-      - name: Save Docker image as tar file
-        run: docker save ci-and-cd-demo-app:latest -o server/ci-and-cd-demo-app.tar
-
-      - name: Upload Docker image to Nexus
-        run: |
-          curl -v -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
-            --upload-file server/ci-and-cd-demo-app.tar \
-            ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/ci-and-cd-demo-app.tar
-```
-
-### Actions secrets and variables
+### Secrets and Variables
 
 1. Go to **Your Repository**
 
@@ -100,13 +44,13 @@ jobs:
 - Name: `NEXUS_HOST`  
   Secret: _http://YOUR_REAL_IP_ADDRESS:8080_
 
-  > [!NOTE]
-  > Usually, you have to set up [Port Forwarding](./port_forwarding.md).
+  > [!IMPORTANT]
+  > Already, Set up [Port Forwarding](./port_forwarding.md).
 
 - Name: `NEXUS_REPO`  
   Secret: _ci-and-cd-demo-artifacts_
 
-## Generate Personal-Access-Tokens
+### Generate Personal-Access-Tokens
 
 1. Click **Profile**, Then Go to **Settings** menu
 

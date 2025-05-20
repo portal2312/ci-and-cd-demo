@@ -2,7 +2,7 @@
 
 ## Installation
 
-Edit `docker-compose.yml`:
+Edit [`docker-compose.yml`](../docker-compose.yml):
 
 ```yaml
 name: ci-and-cd-demo
@@ -38,9 +38,9 @@ docker exec -it nexus cat /nexus-data/admin.password
 # cf3af8f1-98c2-4bca-8c8f-86b2b9b9cf65
 ```
 
-Go to `http://localhost:8081`.
+Go to [`http://localhost:8081`](http://localhost:8081).
 
-## Blob Store 및 Hosted Repository 생성 (e.g., docker-hosted)
+## Configuration
 
 ### Set up Blob Storage
 
@@ -74,13 +74,15 @@ Go to `http://localhost:8081`.
 6. Show URL and Check `NEXUS_REPO` in URL:
    `ci-and-cd-demo-artifacts`
 
-## Set up Port Forwarding
+### Set up Port Forwarding
 
 IP Time Port Forwarding. Refer to [this](./port_forwarding.md).
 
-## Set up GitHub Actions
+## How to use
 
-Edit `.github/workflows/ci.yml`:
+### GitHub Actions
+
+For examples, [`.github/workflows/ci.yml`](../.github/workflows/ci.yml):
 
 ```yml
 name: ci-and-cd-demo-ci
@@ -90,17 +92,21 @@ on:
     branches:
       - main
 
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+  deploy:
+    # ...exists settings
+
     steps:
       # ...exists steps
-
-      - name: Upload Docker image to Nexus
+      - name: Download server artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: server-dist
+          path: server/
+      - name: Upload server to Nexus
         run: |
-          curl -v -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
-            --upload-file server/ci-and-cd-demo-app.tar \
-            ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/ci-and-cd-demo-app.tar
+          curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
+          --upload-file server/server.tar \
+          ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
 ```
 
 ## Etc
