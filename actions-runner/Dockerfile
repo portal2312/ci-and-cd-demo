@@ -9,7 +9,7 @@ RUN dnf upgrade -y && \
     # For utils
     curl git passwd sudo perl-Digest-SHA procps-ng \
     # For Python
-    gcc openssl-devel bzip2-devel libffi-devel xz-devel make ncurses-devel gdbm-devel tk-devel readline-devel \
+    gcc openssl-devel bzip2-devel libffi-devel xz-devel make ncurses-devel gdbm-devel tk-devel readline-devel libpq \
     # For uv
     ca-certificates \
     # For Java

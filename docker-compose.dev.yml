@@ -5,8 +5,12 @@ services:
       - ./actions-runner/entrypoint.sh:/actions-runner/entrypoint.sh
 
   deploy:
+    ports:
+      - 8001:8000
     volumes:
-      # NOTE: 반드시 실행 권한이 필요합니다.
+      # NOTE:
+      # - 최초 한번 만 직접 파일을 업로드하고, 이후 해당 스크립트가 실행되며 자신을 업데이트 한다
+      # - Jenkinsfile 에서 해당 스크립트를 실행한다
       - ./deploy/deploy_from_nexus.sh:/app/deploy_from_nexus.sh
       # NOTE: 반드시 실행 권한이 필요합니다.
       - ./deploy/entrypoint.sh:/app/entrypoint.sh

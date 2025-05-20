@@ -90,4 +90,7 @@ RUN chmod +x ${USER_WORKDIR}/deploy_from_nexus.sh
 COPY --chown=${USERNAME}:${USERNAME} entrypoint.sh ${USER_WORKDIR}/entrypoint.sh
 RUN chmod +x ${USER_WORKDIR}/entrypoint.sh
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+EXPOSE 8000
+
+# NOTE: entrypoint.sh 실행 후, 종료하지 않도록 하기
+ENTRYPOINT ["/bin/bash", "-c", "/app/entrypoint.sh; exec /bin/bash"]
