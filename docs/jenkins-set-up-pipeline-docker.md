@@ -21,12 +21,12 @@ Refer to [this](./jenkins.md).
 
 1. Go to **Dashboard**
 
-2. Click **New Item** menu, edit and **OK**:
+2. Click **New Item** menu, edit and click **OK** button:
 
    - Enter an item name: _ci-and-cd-demo-pipeline_
    - Select an item type: `Pipeline`
 
-3. Edit and **Save**:
+3. Edit and click **Save** button:
 
    - General
      - 설명: "CI & CD demo pipeline"
@@ -41,8 +41,8 @@ Refer to [this](./jenkins.md).
      - Definition: `Pipeline script from SCM`
        - SCM: `Git`
          - Repositories
-           - Repository URL: _https://github.com/yourusername/ci-and-cd-demo.git_
-           - Credentials: `ci-and-cd-demo-personal-access-token`
+           - Repository URL: _https://github.com/username/ci-and-cd-demo.git_
+           - Credentials: _GITHUB_PERSONAL_ACCESS_TOKEN_
        - Branches to build
          - Branch Specifier: `*/main`
        - Script Path: _server/Jenkinsfile_. Edit and **Save**:

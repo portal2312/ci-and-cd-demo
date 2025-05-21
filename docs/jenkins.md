@@ -56,7 +56,7 @@ Input to getting initial admin password.
 
 ## Configuration
 
-### Set up Plugins
+### Plugins
 
 1. Go to **Dashboard**
 
@@ -68,7 +68,7 @@ Input to getting initial admin password.
 
    - [x] Pipeline: Required
 
-### Set up Credentials
+### Credentials
 
 1. Go to **Dashboard**
 

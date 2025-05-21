@@ -21,9 +21,9 @@ By a runner:
 - [GitHub Actions Runner](../.github/workflows/ci.yml)
 - [Self Hosted Runner](../.github/workflows/ci-self-hosted-runner.yml)
 
-## Set up GitHub Actions
+## Set up GitHub Actions environments
 
-### Secrets and Variables
+### Actions secrets and variables
 
 1. Go to **Your Repository**
 
@@ -50,17 +50,19 @@ By a runner:
 - Name: `NEXUS_REPO`  
   Secret: _ci-and-cd-demo-artifacts_
 
-### Generate Personal-Access-Tokens
+### Fine-grained Personal Access Tokens
 
-1. Click **Profile**, Then Go to **Settings** menu
+1. Click **Profile**
 
-2. Go to **Developer settings** sub menu
+2. Go to **Settings** menu
 
-3. Click **Personal access tokens/Fine grained tokens** sub menu
+3. Go to **Developer settings** right sub menu
 
-4. Select **Generate new token**
+4. Click **Personal access tokens/Fine grained tokens** sub menu
 
-5. Edit and Select **Generate token**:
+5. Select **Generate new token**
+
+6. Edit and Select **Generate token**:
 
    - Token name: _ci-and-cd-demo-personal-access-token_
    - Expiration: _expiry date_
@@ -68,4 +70,5 @@ By a runner:
      - [x] ci-and-cd-demo
    - Permissions
      - Repository permissions
-       - Contents: `Read-only`
+       - Contents: `Read-only` (Required)
+       - Webhooks: `Read and write` (Optional, useful)

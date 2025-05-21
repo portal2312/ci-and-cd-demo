@@ -28,5 +28,7 @@
    - 내부 IP 주소: 현재 접속 된 장치의 IP 주소
    - 내부 포트: 8081
 
-   > [!NOTE]
-   > Nexus default port is 8081.
+## Default Ports
+
+- Jenkins: 8080
+- Nexus: 8081
