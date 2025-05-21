@@ -1,4 +1,4 @@
-name: ci-and-cd-demo-ci
+name: ci-self-hosted-runners
 on:
   push:
     branches: [main]

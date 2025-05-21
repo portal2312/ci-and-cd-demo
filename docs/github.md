@@ -52,15 +52,17 @@ By a runner:
 
 ### Generate Personal-Access-Tokens
 
-1. Click **Profile**, Then Go to **Settings** menu
+1. Click **Profile**
 
-2. Go to **Developer settings** sub menu
+2. Go to **Settings** menu
 
-3. Click **Personal access tokens/Fine grained tokens** sub menu
+3. Go to **Developer settings** right sub menu
 
-4. Select **Generate new token**
+4. Click **Personal access tokens/Fine grained tokens** sub menu
 
-5. Edit and Select **Generate token**:
+5. Select **Generate new token**
+
+6. Edit and Select **Generate token**:
 
    - Token name: _ci-and-cd-demo-personal-access-token_
    - Expiration: _expiry date_
@@ -69,3 +71,4 @@ By a runner:
    - Permissions
      - Repository permissions
        - Contents: `Read-only`
+       - Webhooks: `Read and write`

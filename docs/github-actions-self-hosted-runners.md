@@ -63,14 +63,14 @@ docker compose -f "docker-compose.yml" up -d --build
 
 ### Environment variables
 
-`.env`:
+For examples, `.env`:
 
 ```ini
 # ...existing code...
 
 # Runner
 RUNNER_VERSION=2.323.0
-RUNNER_URL=https://github.com/portal2312/ci-and-cd-demo
+RUNNER_URL=https://github.com/username/ci-and-cd-demo
 RUNNER_TOKEN=ACRCVIXFYDGTPPUKJPEZLL3ICGECU
 RUNNER_NAME=ci-and-cd-demo-runner
 RUNNER_LABELS=ci-and-cd-demo-runner
