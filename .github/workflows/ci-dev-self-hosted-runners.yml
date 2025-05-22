@@ -1,7 +1,10 @@
-name: ci-self-hosted-runners
+name: ci-dev-self-hosted-runners
+
 on:
   push:
-    branches: [main]
+    branches: [dev]
+  pull_request:
+    branches: [dev]
 
 jobs:
   server-build:
