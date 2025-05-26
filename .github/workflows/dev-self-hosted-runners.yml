@@ -1,4 +1,4 @@
-name: ci-dev-self-hosted-runners
+name: dev-self-hosted-runners
 
 on:
   push:
@@ -140,11 +140,3 @@ jobs:
           curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
           --upload-file server/server.tar \
           ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
-
-  notify:
-    runs-on: [ci-and-cd-demo-runner]
-    needs:
-      - deploy
-    steps:
-      - name: Notify Jenkins
-        run: curl -X POST "${{ secrets.JENKINS_URL }}/generic-webhook-trigger/invoke?token=${{ secrets.JENKINS_JOB_TOKEN }}"

@@ -1,7 +1,10 @@
+// Jenkins Pipeline Syntax
+// https://www.jenkins.io/doc/book/pipeline/syntax/
 pipeline {
   agent any
   stages {
     stage('Deploy') {
+      // https://www.jenkins.io/doc/book/pipeline/syntax/#declarative-steps
       steps {
         sshagent(['jenkins-deploy']) {
           sh '''
