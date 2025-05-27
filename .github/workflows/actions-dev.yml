@@ -1,8 +1,10 @@
-name: main-runners
+name: Actions dev CI
 
 on:
   push:
-    branches: [test]
+    branches: [dev]
+  pull_request:
+    branches: [dev]
 
 jobs:
   server-build-test:
@@ -16,11 +18,6 @@ jobs:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         ports:
           - 5432:5432
-    env:
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      UV_CACHE_DIR: /tmp/.uv-cache
     steps:
       - uses: actions/checkout@v4
 
@@ -65,22 +62,22 @@ jobs:
       - name: Archive server source
         run: |
           tar --exclude='**/.dockerignore' \
-            --exclude='**/docker-compose*' \
-            --exclude='**/compose*' \
-            --exclude='**/Dockerfile*' \
-            --exclude='*.py[oc]' \
-            --exclude='*.egg-info' \
-            --exclude='*.bak' \
-            --exclude='* copy*' \
-            --exclude='.env' \
-            --exclude='**/.vscode' \
-            --exclude='!**/.vscode/.*.json' \
-            --exclude='**/__pycache__' \
-            --exclude='**/db.sqlite3' \
-            --exclude='**/schema.graphql' \
-            --exclude='**/.pytest_cache' \
-            --exclude='**/.venv' \
-            -cvf server/server.tar --directory server .
+              --exclude='**/docker-compose*' \
+              --exclude='**/compose*' \
+              --exclude='**/Dockerfile*' \
+              --exclude='*.py[oc]' \
+              --exclude='*.egg-info' \
+              --exclude='*.bak' \
+              --exclude='* copy*' \
+              --exclude='.env' \
+              --exclude='**/.vscode' \
+              --exclude='!**/.vscode/.*.json' \
+              --exclude='**/__pycache__' \
+              --exclude='**/db.sqlite3' \
+              --exclude='**/schema.graphql' \
+              --exclude='**/.pytest_cache' \
+              --exclude='**/.venv' \
+              -cvf server/server.tar --directory server .
 
       - name: Upload server artifact
         uses: actions/upload-artifact@v4
@@ -91,7 +88,9 @@ jobs:
   client-build:
     runs-on: ubuntu-latest
     env:
+      # graphql codegen 시, 사용 되는 GraphQL 스키마
       GRAPHQL_SCHEMA: schema.graphql
+      UV_CACHE_DIR: /tmp/.uv-cache
     steps:
       - uses: actions/checkout@v4
 
@@ -129,17 +128,15 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs:
-      - client-build
-      - server-build-test
+    needs: [client-build, server-build-test]
     steps:
       - uses: actions/checkout@v4
 
       - name: Archive and Upload deploy to Nexus
         run: |
           tar --exclude='**/.dockerignore' \
-            --exclude='**/Dockerfile*' \
-            -cvf deploy/deploy.tar --directory deploy .
+              --exclude='**/Dockerfile*' \
+              -cvf deploy/deploy.tar --directory deploy .
           curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
             --upload-file deploy/deploy.tar \
             ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/deploy.tar
@@ -166,13 +163,5 @@ jobs:
       - name: Upload server to Nexus
         run: |
           curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
-          --upload-file server/server.tar \
-          ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
-
-  notify:
-    runs-on: ubuntu-latest
-    needs:
-      - deploy
-    steps:
-      - name: Notify Jenkins
-        run: curl -X POST "${{ secrets.JENKINS_URL }}/generic-webhook-trigger/invoke?token=${{ secrets.JENKINS_JOB_TOKEN_TEST }}"
+            --upload-file server/server.tar \
+            ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar

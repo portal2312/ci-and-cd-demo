@@ -1,4 +1,4 @@
-name: dev-self-hosted-runners
+name: Self-hosted dev CI
 
 on:
   push:
@@ -7,10 +7,19 @@ on:
     branches: [dev]
 
 jobs:
-  server-build:
+  server-build-test:
     runs-on: [ci-and-cd-demo-runner]
+    env:
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      # https://docs.astral.sh/uv/reference/cli/#uv-pip-install--link-mode
+      UV_LINK_MODE: copy
     steps:
       - uses: actions/checkout@v4
+
       - name: Install server dependencies
         working-directory: server
         run: |
@@ -18,22 +27,6 @@ jobs:
           uv pip install --upgrade pip
           uv pip install -r requirements.dev.txt
 
-  server-test:
-    runs-on: [ci-and-cd-demo-runner]
-    needs:
-      - server-build
-    env:
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      # NOTE: secrets.POSTGRES_HOST is your real local IP
-      # - Because, docker-compose.yml service volume: /var/run/docker.sock:/var/run/docker.sock
-      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-      # https://docs.astral.sh/uv/reference/cli/#uv-pip-install--link-mode
-      UV_LINK_MODE: copy
-    steps:
-      - uses: actions/checkout@v4
       - name: Start PostgreSQL
         run: |
           sudo docker run -d --rm \
@@ -43,37 +36,42 @@ jobs:
             -e POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
             -p ${{ secrets.POSTGRES_PORT }}:5432 \
             postgres:15
+
       - name: Run migrations
         working-directory: server
         run: uv run python manage.py migrate --noinput
+
       - name: Export GraphQL schema
         working-directory: server
         run: uv run python manage.py export_schema --path schema.graphql project.schema
+
       - name: Run tests
         working-directory: server
         run: uv run pytest --maxfail=1 --disable-warnings -q
+
       - name: Stop PostgreSQL
-        run: |
-          sudo docker stop ci-and-cd-demo-actions-runner-postgres
+        run: sudo docker stop ci-and-cd-demo-actions-runner-postgres
+
       - name: Archive server source
         run: |
           tar --exclude='**/.dockerignore' \
-            --exclude='**/docker-compose*' \
-            --exclude='**/compose*' \
-            --exclude='**/Dockerfile*' \
-            --exclude='*.py[oc]' \
-            --exclude='*.egg-info' \
-            --exclude='*.bak' \
-            --exclude='* copy*' \
-            --exclude='.env' \
-            --exclude='**/.vscode' \
-            --exclude='!**/.vscode/.*.json' \
-            --exclude='**/__pycache__' \
-            --exclude='**/db.sqlite3' \
-            --exclude='**/schema.graphql' \
-            --exclude='**/.pytest_cache' \
-            --exclude='**/.venv' \
-            -cvf server/server.tar --directory server .
+              --exclude='**/docker-compose*' \
+              --exclude='**/compose*' \
+              --exclude='**/Dockerfile*' \
+              --exclude='*.py[oc]' \
+              --exclude='*.egg-info' \
+              --exclude='*.bak' \
+              --exclude='* copy*' \
+              --exclude='.env' \
+              --exclude='**/.vscode' \
+              --exclude='!**/.vscode/.*.json' \
+              --exclude='**/__pycache__' \
+              --exclude='**/db.sqlite3' \
+              --exclude='**/schema.graphql' \
+              --exclude='**/.pytest_cache' \
+              --exclude='**/.venv' \
+              -cvf server/server.tar --directory server .
+
       - name: Upload server artifact
         uses: actions/upload-artifact@v4
         with:
@@ -86,19 +84,24 @@ jobs:
       GRAPHQL_SCHEMA: schema.graphql
     steps:
       - uses: actions/checkout@v4
+
       - name: Install dependencies
         working-directory: client
         run: yarn install --immutable
+
       - name: GraphQL Codegen
         working-directory: client
         run: yarn run codegen
+
       - name: Build client
         working-directory: client
         run: |
           rm -rf src/gql
           yarn run build
+
       - name: Archive client dist
         run: tar -cvf client/client-dist.tar --directory client/dist .
+
       - name: Upload client artifact
         uses: actions/upload-artifact@v4
         with:
@@ -107,36 +110,40 @@ jobs:
 
   deploy:
     runs-on: [ci-and-cd-demo-runner]
-    needs:
-      - client-build
-      - server-test
+    needs: [client-build, server-build-test]
     steps:
+      - uses: actions/checkout@v4
+
       - name: Archive and Upload deploy to Nexus
         run: |
           tar --exclude='**/.dockerignore' \
-            --exclude='**/Dockerfile*' \
-            -cvf deploy/deploy.tar --directory deploy .
+              --exclude='**/Dockerfile*' \
+              -cvf deploy/deploy.tar --directory deploy .
           curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
             --upload-file deploy/deploy.tar \
             ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/deploy.tar
           rm -rf deploy/deploy.tar
+
       - name: Download client artifact
         uses: actions/download-artifact@v4
         with:
           name: client-dist
           path: client/
+
       - name: Upload client to Nexus
         run: |
           curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
             --upload-file client/client-dist.tar \
             ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/client-dist.tar
+
       - name: Download server artifact
         uses: actions/download-artifact@v4
         with:
           name: server-dist
           path: server/
+
       - name: Upload server to Nexus
         run: |
           curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
-          --upload-file server/server.tar \
-          ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
+            --upload-file server/server.tar \
+            ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
