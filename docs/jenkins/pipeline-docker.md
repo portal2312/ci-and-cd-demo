@@ -1,10 +1,10 @@
-# Jenkins Set up pipeline with Docker
+# Jenkins Pipeline with Docker
 
 ## Requirements
 
-Refer to [this](./jenkins.md).
+Refer to [this](./index.md).
 
-### Set up Plugins
+### Plugins
 
 1. Go to **Dashboard**
 
@@ -14,8 +14,8 @@ Refer to [this](./jenkins.md).
 
 4. Check plugins and install:
 
-   - [x] Docker Pipeline: Required
    - [x] Blue Ocean: Very useful
+   - [x] Docker Pipeline: Required
 
 ## Set up Pipeline
 
@@ -32,7 +32,7 @@ Refer to [this](./jenkins.md).
      - 설명: "CI & CD demo pipeline"
      - [x] 이 빌드는 매개변수가 있습니다.
        - String Parameter
-         - 매개변수 명: _NEXUS_HOST_
+         - 매개변수 명: _NEXUS_URL_
          - Default Value: _http://YOUR_IP_ADDRESS:PORT_
        - String Parameter
          - 매개변수 명: _NEXUS_REPO_

@@ -1,9 +1,4 @@
 services:
-  actions-runner:
-    volumes:
-      # NOTE: 반드시 실행 권한이 필요합니다.
-      - ./actions-runner/entrypoint.sh:/actions-runner/entrypoint.sh
-
   deploy:
     ports:
       - 8001:8000
@@ -25,10 +20,10 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_DB=${POSTGRES_DB:-postgres}
       - POSTGRES_INITDB_ARGS=${POSTGRES_INITDB_ARGS:-"--encoding=UTF8 --lc-collate=ko_KR.utf8 --lc-ctype=ko_KR.utf8"}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
 
   server:
     build:
@@ -55,6 +50,11 @@ services:
         "-c",
         "python -m debugpy --wait-for-client --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8000 --nothreading",
       ]
+
+  runner:
+    volumes:
+      # NOTE: 반드시 실행 권한이 필요합니다.
+      - ./runner/entrypoint.sh:/runner/entrypoint.sh
 
 volumes:
   db_data:

@@ -1,17 +1,18 @@
 FROM rockylinux:8
 
 # Set up environment variables
-ARG NEXUS_HOST=http://nexus:8081
+ARG NEXUS_URL=http://nexus:8081
 ARG NEXUS_PASSWORD
 ARG NEXUS_USER=admin
 ARG NEXUS_REPO
-ENV NEXUS_HOST=${NEXUS_HOST}
+ENV NEXUS_URL=${NEXUS_URL}
 ENV NEXUS_PASSWORD=${NEXUS_PASSWORD}
 ENV NEXUS_USER=${NEXUS_USER}
 ENV NEXUS_REPO=${NEXUS_REPO}
 
 EXPOSE 80
 EXPOSE 443
+EXPOSE 8000
 
 # Install dependencies
 RUN dnf upgrade -y && \
@@ -77,7 +78,7 @@ RUN mkdir -p ~/.ssh && chmod 700 ~/.ssh && \
     touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys
 
 # Support a non-root user non-interactive shell
-RUN echo "export NEXUS_HOST=${NEXUS_HOST}" >> /home/${USERNAME}/.bash_profile
+RUN echo "export NEXUS_URL=${NEXUS_URL}" >> /home/${USERNAME}/.bash_profile
 RUN echo "export NEXUS_PASSWORD=${NEXUS_PASSWORD}" >> /home/${USERNAME}/.bash_profile
 RUN echo "export NEXUS_USER=${NEXUS_USER}" >> /home/${USERNAME}/.bash_profile
 RUN echo "export NEXUS_REPO=${NEXUS_REPO}" >> /home/${USERNAME}/.bash_profile
@@ -89,8 +90,6 @@ RUN chmod +x ${USER_WORKDIR}/deploy_from_nexus.sh
 # Set up entrypoint script
 COPY --chown=${USERNAME}:${USERNAME} entrypoint.sh ${USER_WORKDIR}/entrypoint.sh
 RUN chmod +x ${USER_WORKDIR}/entrypoint.sh
-
-EXPOSE 8000
 
 # NOTE: entrypoint.sh 실행 후, 종료하지 않도록 하기
 ENTRYPOINT ["/bin/bash", "-c", "/app/entrypoint.sh; exec /bin/bash"]

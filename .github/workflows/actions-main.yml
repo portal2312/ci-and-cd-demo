@@ -134,10 +134,11 @@ jobs:
         run: |
           tar --exclude='**/.dockerignore' \
               --exclude='**/Dockerfile*' \
+              --exclude='deploy.tar' \
               -cvf deploy/deploy.tar --directory deploy .
           curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
             --upload-file deploy/deploy.tar \
-            ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/deploy.tar
+            ${{ secrets.NEXUS_URL }}/repository/${{ secrets.NEXUS_REPO }}/deploy.tar
           rm -rf deploy/deploy.tar
 
       - name: Download client artifact
@@ -150,7 +151,7 @@ jobs:
         run: |
           curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
             --upload-file client/client-dist.tar \
-            ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/client-dist.tar
+            ${{ secrets.NEXUS_URL }}/repository/${{ secrets.NEXUS_REPO }}/client-dist.tar
 
       - name: Download server artifact
         uses: actions/download-artifact@v4
@@ -162,7 +163,7 @@ jobs:
         run: |
           curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
             --upload-file server/server.tar \
-            ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
+            ${{ secrets.NEXUS_URL }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
 
   notify:
     runs-on: ubuntu-latest

@@ -3,31 +3,22 @@ name: ci-and-cd-demo
 
 # https://docs.docker.com/reference/compose-file/services/
 services:
-  actions-runner:
-    # https://docs.docker.com/reference/compose-file/services/#build
+  deploy:
     build:
-      # https://docs.docker.com/reference/compose-file/build/#context
-      context: ./actions-runner
-      # https://docs.docker.com/reference/compose-file/build/#args
+      context: ./deploy
       args:
-        # NOTE: RUNNER_VERSION 을 제어하기 위해
-        RUNNER_VERSION: ${RUNNER_VERSION}
-    # https://docs.docker.com/reference/compose-file/services/#tty
+        - NEXUS_URL=${NEXUS_URL:-http://nexus:8081}
+        - NEXUS_PASSWORD=${NEXUS_PASSWORD}
+        - NEXUS_USER=${NEXUS_USER:-admin}
+        - NEXUS_REPO=${NEXUS_REPO}
     tty: true
-    # https://docs.docker.com/reference/compose-file/services/#stdin_open
     stdin_open: true
-    # https://docs.docker.com/reference/compose-file/services/#volumes
+    ports:
+      - 80:80
+      - 443:443
     volumes:
-      # NOTE: 설정과 생성 된 파일 보존을 위해
-      - actions-runner-data:/actions-runner
-      # NOTE: Local 에서 Docker 를 제어하기 위해
-      - /var/run/docker.sock:/var/run/docker.sock
-    # https://docs.docker.com/reference/compose-file/services/#environment
-    environment:
-      - RUNNER_URL=${RUNNER_URL}
-      - RUNNER_TOKEN=${RUNNER_TOKEN}
-      - RUNNER_NAME=${RUNNER_NAME:-ci-and-cd-demo-runner}
-      - RUNNER_LABELS=${RUNNER_LABELS:-ci-and-cd-demo-runner}
+      # NOTE: SSH 설정 등 유지하기 위해
+      - deploy_data:/home/appuser
 
   jenkins:
     build:
@@ -36,7 +27,8 @@ services:
       - 8080:8080
       - 50000:50000
     volumes:
-      - jenkins_data:/var/jenkins_home
+      - jenkins_home:/var/jenkins_home
+      # NOTE: Local 에서 Docker 를 제어하기 위해
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
@@ -49,29 +41,39 @@ services:
       - nexus-data:/nexus-data
     restart: unless-stopped
 
-  deploy:
+  runner:
+    # https://docs.docker.com/reference/compose-file/services/#build
     build:
-      context: ./deploy
+      # https://docs.docker.com/reference/compose-file/build/#context
+      context: ./runner
+      # https://docs.docker.com/reference/compose-file/build/#args
       args:
-        - NEXUS_HOST=${NEXUS_HOST:-http://nexus:8081}
-        - NEXUS_PASSWORD=${NEXUS_PASSWORD}
-        - NEXUS_USER=${NEXUS_USER:-admin}
-        - NEXUS_REPO=${NEXUS_REPO}
+        RUNNER_CHECKSUM: ${RUNNER_CHECKSUM}
+        RUNNER_VERSION: ${RUNNER_VERSION}
+        RUNNER_NODE_VERSION: ${RUNNER_NODE_VERSION}
+    # https://docs.docker.com/reference/compose-file/services/#tty
     tty: true
+    # https://docs.docker.com/reference/compose-file/services/#stdin_open
     stdin_open: true
-    ports:
-      - 80:80
-      - 443:443
+    # https://docs.docker.com/reference/compose-file/services/#volumes
     volumes:
-      # NOTE: SSH 설정 등 유지 한다
-      - deploy_data:/home/appuser
+      # NOTE: 설정과 생성 된 파일 보존을 위해
+      - runner_data:/runner
+      # NOTE: Local 에서 Docker 를 제어하기 위해
+      - /var/run/docker.sock:/var/run/docker.sock
+    # https://docs.docker.com/reference/compose-file/services/#environment
+    environment:
+      - RUNNER_LABELS=${RUNNER_LABELS:-ci-and-cd-demo-runner}
+      - RUNNER_NAME=${RUNNER_NAME:-ci-and-cd-demo-runner}
+      - RUNNER_URL=${RUNNER_URL}
+      - RUNNER_TOKEN=${RUNNER_TOKEN}
 
 # https://docs.docker.com/reference/compose-file/volumes/
 volumes:
+  deploy_data:
+  jenkins_home:
   # NOTE: Actions Runner 작업 경로를 최상위 볼륨으로 설정하기
   # - Runner 의 config.sh 실행 후, 생성 된 파일 보존을 위해
   # - Runner 의 Token 유지를 위해
-  actions-runner-data:
   nexus-data:
-  jenkins_data:
-  deploy_data:
+  runner_data:

@@ -2,8 +2,8 @@
 set -ex
 
 # Check environment variables
-if [[ -z "$NEXUS_HOST" || -z "$NEXUS_USER" || -z "$NEXUS_PASSWORD" || -z "$NEXUS_REPO" ]]; then
-  echo "Required environment variables (NEXUS_HOST, NEXUS_USER, NEXUS_PASSWORD, NEXUS_REPO) are missing."
+if [[ -z "$NEXUS_URL" || -z "$NEXUS_USER" || -z "$NEXUS_PASSWORD" || -z "$NEXUS_REPO" ]]; then
+  echo "Required environment variables (NEXUS_URL, NEXUS_USER, NEXUS_PASSWORD, NEXUS_REPO) are missing."
   exit 1
 fi
 
@@ -13,9 +13,9 @@ DEPLOY_TAR="deploy.tar"
 
 echo
 echo "Downloading artifacts from Nexus repository..."
-curl -u "${NEXUS_USER}:${NEXUS_PASSWORD}" -o /app/${CLIENT_TAR} "${NEXUS_HOST}/repository/${NEXUS_REPO}/${CLIENT_TAR}"
-curl -u "${NEXUS_USER}:${NEXUS_PASSWORD}" -o /app/${SERVER_TAR} "${NEXUS_HOST}/repository/${NEXUS_REPO}/${SERVER_TAR}"
-curl -u "${NEXUS_USER}:${NEXUS_PASSWORD}" -o /app/${DEPLOY_TAR} "${NEXUS_HOST}/repository/${NEXUS_REPO}/${DEPLOY_TAR}"
+curl -u "${NEXUS_USER}:${NEXUS_PASSWORD}" -o /app/${CLIENT_TAR} "${NEXUS_URL}/repository/${NEXUS_REPO}/${CLIENT_TAR}"
+curl -u "${NEXUS_USER}:${NEXUS_PASSWORD}" -o /app/${SERVER_TAR} "${NEXUS_URL}/repository/${NEXUS_REPO}/${SERVER_TAR}"
+curl -u "${NEXUS_USER}:${NEXUS_PASSWORD}" -o /app/${DEPLOY_TAR} "${NEXUS_URL}/repository/${NEXUS_REPO}/${DEPLOY_TAR}"
 
 echo
 echo "Extracting artifacts..."

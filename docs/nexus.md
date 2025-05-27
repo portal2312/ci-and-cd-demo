@@ -2,28 +2,9 @@
 
 ## Installation
 
-Edit [`docker-compose.yml`](../docker-compose.yml):
+### Docker Compose
 
-```yaml
-name: ci-and-cd-demo
-
-services:
-  # ...exists services
-
-  nexus:
-    image: sonatype/nexus3
-    container_name: nexus
-    ports:
-      - "8081:8081"
-    volumes:
-      - nexus-data:/nexus-data
-    restart: unless-stopped
-
-volumes:
-  # ...exists volumes
-
-  nexus-data:
-```
+Add the `nexus` service to your [`docker-compose.yml`](../docker-compose.yml).
 
 Up docker compose:
 
@@ -31,14 +12,35 @@ Up docker compose:
 docker compose -f "docker-compose.yml" up -d --build
 ```
 
-Get initial admin password:
+### Initial Configuration
 
-```bash
-docker exec -it nexus cat /nexus-data/admin.password
-# cf3af8f1-98c2-4bca-8c8f-86b2b9b9cf65
-```
+1. Get initial admin password
 
-Go to [`http://localhost:8081`](http://localhost:8081).
+   Open your terminal. Then, execute the command:
+
+   ```bash
+   docker exec -it ci-and-cd-demo-nexus-1 cat /nexus-data/admin.password
+   # 9f43c0b2-4e9f-4b78-b649-bd4280c5c12f
+   ```
+
+   - `ci-and-cd-demo-nexus-1`: `nexus` service container name
+
+2. Go to [http://localhost:8081](http://localhost:8081)
+
+3. Try, **Sign in**:
+
+   - ID: _admin_
+   - Password: _9f43c0b2-4e9f-4b78-b649-bd4280c5c12f_
+
+4. **Please choose a password for the admin user**, then **Next**:
+
+   - New password:
+   - Confirm password:
+
+5. **Configure Anonymous Access**, then **Next**:
+
+   - [ ] Enable anonymous access
+   - [x] Disable anonymous access
 
 ## Configuration
 
@@ -53,72 +55,72 @@ Go to [`http://localhost:8081`](http://localhost:8081).
 4. Edit and save:
 
    - Type: `File`
-   - Name: _ci-and-cd-demo_
+   - Name: _ci-and-cd-demo_store_
    - Path: (auto-completion)
 
 ### Set up Repositories
 
 1. Go to **⚙️ Repository** menu
 
-2. Go to **Repositories** sub menu
+2. Go to **Repositories** right sub menu
 
-3. Click **Create repository** and Click `raw (hosted)` item
+3. Click **Create repository**
 
-4. Edit and click **Create repository**:
+4. Click `raw (hosted)` item
+
+5. Edit and click **Create repository**:
 
    - Name: _ci-and-cd-demo-artifacts_
    - Blob store: `ci-and-cd-demo`
 
-5. Click created `ci-and-cd-demo-artifacts`
+6. Click created `ci-and-cd-demo-artifacts` repository
 
-6. Show URL and Check `NEXUS_REPO` in URL:
-   `ci-and-cd-demo-artifacts`
+7. Look at the URL:
+   `http://localhost:8081/repository/ci-and-cd-demo-artifacts/`
 
 ### Set up Port Forwarding
 
-IP Time Port Forwarding. Refer to [this](./port_forwarding.md).
+Refer to [Port Forwarding](./port_forwarding.md).
 
-## How to use
+### Set Environment Variables
 
-### GitHub Actions
+Edit [`.env`](../.env):
 
-For examples, [`.github/workflows/ci.yml`](../.github/workflows/ci.yml):
-
-```yml
-name: ci-and-cd-demo-ci
-
-on:
-  push:
-    branches:
-      - main
-
-  deploy:
-    # ...exists settings
-
-    steps:
-      # ...exists steps
-      - name: Download server artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: server-dist
-          path: server/
-      - name: Upload server to Nexus
-        run: |
-          curl -u ${{ secrets.NEXUS_USER }}:${{ secrets.NEXUS_PASSWORD }} \
-          --upload-file server/server.tar \
-          ${{ secrets.NEXUS_HOST }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
+```bash
+NEXUS_URL=http://nexus:8081
+NEXUS_PASSWORD=
+NEXUS_USER=admin
+NEXUS_REPO=ci-and-cd-demo-artifacts
 ```
+
+#### `NEXUS_URL`
+
+> [!IMPORTANT]
+> 환경 변수 `NEXUS_URL` 는 로컬에서 참조 시, `http://nexus:8081` 를 사용해도 된다.  
+> 하지만, GitHub Actions 의 workflows 를 사용하기 위해 secrets and variables 등록과 같이 외부에서 참조하는 경우, 나의 실제 IP와 설정 된 [Port Forwarding](./port_forwarding.md)의 port 를 작성해야 한다.
+
+#### `NEXUS_PASSWORD`
+
+Nexus [`NEXUS_USER`](#nexus_user) password.
+
+#### `NEXUS_USER`
+
+Nexus username.
+
+#### `NEXUS_REPO`
+
+[Set up Repositories](#set-up-repositories) 에서 생성 된 저장소 이름.
 
 ## Etc
 
 파일(컴포넌트) 목록 조회:
 
 ```bash
-curl -u ${NEXUS_USER}:${NEXUS_PASSWORD} ${NEXUS_HOST}/service/rest/v1/components?repository=${NEXUS_REPO}
+curl -u ${NEXUS_USER}:${NEXUS_PASSWORD} ${NEXUS_URL}/service/rest/v1/components?repository=${NEXUS_REPO}
 ```
 
 파일(컴포넌트) 삭제:
 
 ```bash
-curl -u ${NEXUS_USER}:${NEXUS_PASSWORD} -X DELETE ${NEXUS_HOST}/service/rest/v1/components/${COMPONENT_ID}
+curl -u ${NEXUS_USER}:${NEXUS_PASSWORD} -X DELETE ${NEXUS_URL}/service/rest/v1/components/${COMPONENT_ID}
 ```

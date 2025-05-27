@@ -4,22 +4,22 @@
 
 Create `ci-and-cd-demo` public Repository.
 
-And, push your local project to `git://github.com/YOUR_USERNAME/ci-and-cd-demo.git`:
+And, push your local project to `git://github.com/USERNAME/ci-and-cd-demo.git`:
 
 ```bash
 git init
-git remote add origin git://github.com/YOUR_USERNAME/ci-and-cd-demo.git
+git remote add origin git://github.com/USERNAME/ci-and-cd-demo.git
 git add .
 git commit -m "Initial commit"
 git push -u origin main
 ```
 
-## Set up GitHub Workflows for CI
+## Set up GitHub Workflows
 
 By a runner:
 
-- [GitHub Actions Runner](../.github/workflows/ci.yml)
-- [Self Hosted Runner](../.github/workflows/ci-self-hosted-runner.yml)
+- [GitHub Actions Runner](../.github/workflows/actions-main.yml)
+- [Self Hosted Runner](../.github/workflows/self-hosted-main.yml)
 
 ## Set up GitHub Actions environments
 
@@ -27,28 +27,27 @@ By a runner:
 
 1. Go to **Your Repository**
 
-2. Click **Settings** tab
+2. Go to **Settings** tab
 
-3. Click **Security/Secrets and variables/Actions** menu
+3. Click **Security/Secrets and variables/Actions** right sub menu
 
-4. In **Repository secrets**, and click **New repository secret** button
+4. In **Repository secrets**, and click **New repository secret** button. Then **Save**.
 
-5. Edit and save:
+#### Repository secrets
 
-- Name: `NEXUS_USER`  
-  Secret: _admin_
-
-- Name: `NEXUS_PASSWORD`  
-  Secret: _YOUR_PASSWORD_
-
-- Name: `NEXUS_HOST`  
-  Secret: _http://YOUR_REAL_IP_ADDRESS:8080_
-
-  > [!IMPORTANT]
-  > Already, Set up [Port Forwarding](./port_forwarding.md).
-
-- Name: `NEXUS_REPO`  
-  Secret: _ci-and-cd-demo-artifacts_
+| Name                                                                        | Secret                           |
+| --------------------------------------------------------------------------- | -------------------------------- |
+| [JENKINS_JOB_TOKEN](./jenkins/generic-webhook-trigger.md#jenkins_job_token) | ci-and-cd-demo Job Token         |
+| [JENKINS_URL](./jenkins/generic-webhook-trigger.md#jenkins_url)             | http://YOUR_REAL_IP_ADDRESS:8080 |
+| [NEXUS_PASSWORD](./nexus.md#nexus_password)                                 | NEXUS_USER password              |
+| [NEXUS_REPO](./nexus.md#nexus_repo)                                         | ci-and-cd-demo-artifacts         |
+| [NEXUS_URL](./nexus.md#nexus_url)                                           | http://YOUR_REAL_IP_ADDRESS:8081 |
+| [NEXUS_USER](./nexus.md#nexus_user)                                         | admin                            |
+| [POSTGRES_DB](./db.md#postgres_db)                                          |                                  |
+| [POSTGRES_HOST](./db.md#postgres_host)                                      |                                  |
+| [POSTGRES_PASSWORD](./db.md#postgres_password)                              |                                  |
+| [POSTGRES_PORT](./db.md#postgres_port)                                      |                                  |
+| [POSTGRES_USER](./db.md#postgres_user)                                      |                                  |
 
 ### Fine-grained Personal Access Tokens
 
