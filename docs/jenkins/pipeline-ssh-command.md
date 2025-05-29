@@ -30,7 +30,7 @@ Generate SSH key `jenkins_deploy`:
 ssh-keygen -t ed25519 -C "jenkins_deploy" -f ~/.ssh/jenkins_deploy
 ```
 
-- `-t`: Algorithm (default: `rsa`, 요즘은 `ed25519` 를 선호)
+- `-t`: Algorithm (default: `rsa`, currently `ed25519` prefer)
 - `-C`: Comment
 - `-f`: Output keyfile
 
@@ -123,7 +123,7 @@ ssh -i ~/.ssh/jenkins_deploy -o StrictHostKeyChecking=no appuser@deploy 'bash -l
 3. 실행 중인 workflow 작업 목록에서 **Generic Webhook Trigger** API 를 호출 (일반적으로 마지막에 호출)
 4. 호출 받은 **Generic Webhook Trigger** API 를 설정 한 **Jenkins** 의 **Pipeline** 이 자동 build
 
-[Generic Webhook Trigger](./generic-webhook-trigger.md) 설정 하기.
+[Jenkins Pipeline Generic Webhook Trigger](./generic-webhook-trigger.md) 설정 하기.
 
 ## Build
 

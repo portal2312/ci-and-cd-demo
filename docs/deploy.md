@@ -18,7 +18,7 @@ docker compose -f "docker-compose.yml" up -d --build
 
 ### `entrypoint.sh`
 
-Docker 내부에 있는 서비스를 실행 합니다.
+Execute the required services in Docker.
 
 [This file](../deploy/entrypoint.sh) is used last in the Dockerfile.
 
@@ -27,13 +27,13 @@ Docker 내부에 있는 서비스를 실행 합니다.
 
 ### `deploy_from_nexus.sh`
 
-패치와 서비스를 실행 합니다.
+Patch sources and execute required services.
 
-[This file](../deploy/deploy_from_nexus.sh)은 Jenkins 서비스에서 [`Jenkinsfile`](../Jenkinsfile) 이 설정 된 [Pipeline](./jenkins-set-up-pipeline-ssh-command.md#set-up-pipeline) 빌드 시, 실행 됩니다.
+The [`deploy_from_nexus.sh`](../deploy/deploy_from_nexus.sh) is executed by [`Jenkinsfile`](../Jenkinsfile).
 
-> [!IMPORTANT]
-> 최초 한번은 수동으로 이 파일을 Upload 를 해주십시오.  
-> 이 후 실행 시, 자동으로 자신을 업데이트 합니다.
+> [!NOTE]
+> Initially, upload only this file.  
+> Now, it automatically updates itself.
 
 ### `gunicorn.conf.py`
 
@@ -50,9 +50,10 @@ Nginx basic configuration file.
 
 ### Set up SSH authorized keys for jenkins
 
-`jenkins` container 의 [`~/.ssh/jenkins_deploy.pub`](./jenkins/pipeline-ssh-command.md#sshjenkins_deploypub) 를 `deploy` container 에서 `appuser` 사용자의 `~/.ssh/authorized_keys` 에 추가 합니다:
+Add the [`~/.ssh/jenkins_deploy.pub`](./jenkins/pipeline-ssh-command.md#sshjenkins_deploypub) file from the `jenkins` container to the `~/.ssh/authorized_keys` file of the `appuser` user in the `deploy` container:
 
 ```bash
+# The appuser shell in the deploy container
 echo 'JENKINS_SSH_PUBLIC_KEY' >> ~/.ssh/authorized_keys
 ```
 

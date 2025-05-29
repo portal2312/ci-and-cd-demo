@@ -1,4 +1,4 @@
-# Generic Webhook Trigger
+# Jenkins Pipeline Generic Webhook Trigger
 
 ## Jenkins
 

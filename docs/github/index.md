@@ -18,8 +18,8 @@ git push -u origin main
 
 By a runner:
 
-- [GitHub Actions Runner](../.github/workflows/actions-main.yml)
-- [Self Hosted Runner](../.github/workflows/self-hosted-main.yml)
+- [GitHub Actions Runner](../.github/workflows/main.yml)
+- [Self Hosted Runner](../.github/workflows/main-self-hosted.yml)
 
 ## Set up GitHub Actions environments
 

@@ -71,7 +71,7 @@ docker compose -f "docker-compose.yml" up -d --build
 
 - Kind: `Username with password`
 - Username: _Your GitHub USERNAME_
-- Password: Generated [Fine-grained Personal Access Tokens](../github.md#fine-grained-personal-access-tokens)
+- Password: Generated [Fine-grained Personal Access Tokens](../github/index.md#fine-grained-personal-access-tokens)
 - ID: _ci-and-cd-demo-personal-access-token_
 
 #### `ci-and-cd-demo-nexus-credentials`
@@ -83,11 +83,14 @@ docker compose -f "docker-compose.yml" up -d --build
 
 #### `jenkins_deploy`
 
-특정 Pipeline 에서 설정 된 Jenkinsfile 을 이용한 SSH Command 를 실행하는 경우, 자격 증명을 위해 필요합니다.
+> [!TIP]
+> Skip if not deployed by SSH Command.
 
-`jenkins_deploy` 는 Jenkins 에서 생성 된 SSH private key 입니다.
+If you run an SSH command using a `Jenkinsfile` configured in a pipeline, credentials are required.
 
-자세한 설정은 [이 곳](./pipeline-ssh-command.md#set-up-ssh-private-key-to-credentials)을 참조바랍니다.
+`jenkins_deploy` is an SSH Private Key at the `jenkins` container.
+
+Refer to this for detailed [Set up SSH Private Key to Credentials](./pipeline-ssh-command.md#set-up-ssh-private-key-to-credentials).
 
 ## Set up Pipelines
 

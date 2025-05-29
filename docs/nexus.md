@@ -96,8 +96,9 @@ NEXUS_REPO=ci-and-cd-demo-artifacts
 #### `NEXUS_URL`
 
 > [!IMPORTANT]
-> 환경 변수 `NEXUS_URL` 는 로컬에서 참조 시, `http://nexus:8081` 를 사용해도 된다.  
-> 하지만, GitHub Actions 의 workflows 를 사용하기 위해 secrets and variables 등록과 같이 외부에서 참조하는 경우, 나의 실제 IP와 설정 된 [Port Forwarding](./port_forwarding.md)의 port 를 작성해야 한다.
+> Define `http://nexus:8081` at your local. For example, by docker compose container.  
+> But, define your _real IP_ if you want to use an external. For example, GitHub Actions Secrets and Variables.
+> Then, your need to [Port Forwarding](./port_forwarding.md)
 
 #### `NEXUS_PASSWORD`
 
@@ -109,17 +110,17 @@ Nexus username.
 
 #### `NEXUS_REPO`
 
-[Set up Repositories](#set-up-repositories) 에서 생성 된 저장소 이름.
+Generated repo name by [Set up Repositories](#set-up-repositories).
 
 ## Etc
 
-파일(컴포넌트) 목록 조회:
+Show files(components):
 
 ```bash
 curl -u ${NEXUS_USER}:${NEXUS_PASSWORD} ${NEXUS_URL}/service/rest/v1/components?repository=${NEXUS_REPO}
 ```
 
-파일(컴포넌트) 삭제:
+Delete file(component):
 
 ```bash
 curl -u ${NEXUS_USER}:${NEXUS_PASSWORD} -X DELETE ${NEXUS_URL}/service/rest/v1/components/${COMPONENT_ID}

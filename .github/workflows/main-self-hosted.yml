@@ -1,4 +1,4 @@
-name: Actions main CI
+name: main Self-hosted CI
 
 on:
   push:
@@ -6,44 +6,31 @@ on:
 
 jobs:
   server-build-test:
-    runs-on: ubuntu-latest
-    services:
-      db:
-        image: postgres:15
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        ports:
-          - 5432:5432
+    runs-on: [ci-and-cd-demo-runner]
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      # https://docs.astral.sh/uv/reference/cli/#uv-pip-install--link-mode
+      UV_LINK_MODE: copy
     steps:
       - uses: actions/checkout@v4
 
-      # https://docs.astral.sh/uv/guides/integration/github/#caching
-      - name: Restore uv cache
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.uv-cache
-          key: uv-${{ runner.os }}-${{ hashFiles('server/uv.lock') }}
-          restore-keys: |
-            uv-${{ runner.os }}-${{ hashFiles('server/uv.lock') }}
-            uv-${{ runner.os }}
-
-      # https://docs.astral.sh/uv/guides/integration/github/
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "server/uv.lock"
-
-      # https://docs.astral.sh/uv/guides/integration/github/#syncing-and-running
       - name: Install server dependencies
         working-directory: server
         run: uv sync --locked --all-extras --dev
 
-      # https://docs.astral.sh/uv/guides/integration/github/#caching
-      - name: Minimize uv cache
-        run: uv cache prune --ci
+      - name: Start PostgreSQL
+        run: |
+          sudo docker run -d --rm \
+            --name ci-and-cd-demo-runner-postgres \
+            -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+            -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+            -e POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+            -p ${{ secrets.POSTGRES_PORT }}:5432 \
+            postgres:15
 
       - name: Run migrations
         working-directory: server
@@ -56,6 +43,9 @@ jobs:
       - name: Run tests
         working-directory: server
         run: uv run pytest --maxfail=1 --disable-warnings -q
+
+      - name: Stop PostgreSQL
+        run: sudo docker stop ci-and-cd-demo-runner-postgres
 
       - name: Archive server source
         run: |
@@ -84,22 +74,11 @@ jobs:
           path: server/server.tar
 
   client-build:
-    runs-on: ubuntu-latest
+    runs-on: [ci-and-cd-demo-runner]
     env:
-      # graphql codegen 시, 사용 되는 GraphQL 스키마
       GRAPHQL_SCHEMA: schema.graphql
-      UV_CACHE_DIR: /tmp/.uv-cache
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Enable Corepack
-        working-directory: client
-        run: corepack enable
 
       - name: Install dependencies
         working-directory: client
@@ -125,7 +104,7 @@ jobs:
           path: client/client-dist.tar
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [ci-and-cd-demo-runner]
     needs: [client-build, server-build-test]
     steps:
       - uses: actions/checkout@v4
@@ -166,7 +145,7 @@ jobs:
             ${{ secrets.NEXUS_URL }}/repository/${{ secrets.NEXUS_REPO }}/server.tar
 
   notify:
-    runs-on: ubuntu-latest
+    runs-on: [ci-and-cd-demo-runner]
     needs: [deploy]
     steps:
       - name: Notify Jenkins

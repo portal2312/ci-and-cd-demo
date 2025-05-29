@@ -47,7 +47,7 @@ RUNNER_NODE_VERSION=v22.14.0
 Runner labels.
 
 > [!IMPORTANT]
-> GitHub workflows jobs 작업의 [`runs-on`](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on) 에서 사용한다.
+> It is used in the [runs-on](<(https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on)>) option of GitHub workflows jobs.
 
 #### `RUNNER_NAME`
 

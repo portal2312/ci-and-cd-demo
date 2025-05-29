@@ -1,4 +1,4 @@
-name: Self-hosted dev CI
+name: dev Self-hosted CI
 
 on:
   push:

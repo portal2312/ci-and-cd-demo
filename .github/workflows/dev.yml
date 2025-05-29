@@ -1,4 +1,4 @@
-name: Actions dev CI
+name: dev CI
 
 on:
   push:
