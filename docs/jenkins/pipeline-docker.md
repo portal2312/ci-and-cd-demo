@@ -14,8 +14,8 @@ Refer to [this](./index.md).
 
 4. Check plugins and install:
 
-   - [x] Blue Ocean: Very useful
-   - [x] Docker Pipeline: Required
+   - [x] Blue Ocean
+   - [x] Docker Pipeline
 
 ## Set up Pipeline
 

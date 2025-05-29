@@ -53,7 +53,7 @@ docker compose -f "docker-compose.yml" up -d --build
 
 4. Check plugins and install:
 
-   - [x] Pipeline: Required
+   - [x] Pipeline
 
 ### Credentials
 
@@ -80,6 +80,14 @@ docker compose -f "docker-compose.yml" up -d --build
 - Username: _Your username for Nexus_
 - Password: _Your password for Nexus_
 - ID: _ci-and-cd-demo-nexus-credentials_
+
+#### `jenkins_deploy`
+
+특정 Pipeline 에서 설정 된 Jenkinsfile 을 이용한 SSH Command 를 실행하는 경우, 자격 증명을 위해 필요합니다.
+
+`jenkins_deploy` 는 Jenkins 에서 생성 된 SSH private key 입니다.
+
+자세한 설정은 [이 곳](./pipeline-ssh-command.md#set-up-ssh-private-key-to-credentials)을 참조바랍니다.
 
 ## Set up Pipelines
 

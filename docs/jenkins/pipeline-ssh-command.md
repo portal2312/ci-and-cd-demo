@@ -14,9 +14,9 @@ Refer to [this](./index.md).
 
 4. Check plugins and install:
 
-   - [x] Blue Ocean: Very useful
-   - [x] Docker Pipeline: Required
-   - [x] SSH Agent (or SSH Agent Plugin)
+   - [x] Blue Ocean
+   - [x] Docker Pipeline
+   - [x] SSH Agent
 
 ## Configuration
 
@@ -24,17 +24,17 @@ Refer to [this](./index.md).
 
 Go to the `jenkins` user at the `jenkins` container.
 
-Generate SSH key `jenkins-deploy`:
+Generate SSH key `jenkins_deploy`:
 
 ```bash
-ssh-keygen -t ed25519 -C "jenkins-deploy" -f ~/.ssh/jenkins_deploy
+ssh-keygen -t ed25519 -C "jenkins_deploy" -f ~/.ssh/jenkins_deploy
 ```
 
 - `-t`: Algorithm (default: `rsa`, 요즘은 `ed25519` 를 선호)
 - `-C`: Comment
 - `-f`: Output keyfile
 
-Show, generated public SSH key by `jenkins-deploy`:
+Show, generated public SSH key by `jenkins_deploy`:
 
 ```bash
 cat ~/.ssh/jenkins_deploy

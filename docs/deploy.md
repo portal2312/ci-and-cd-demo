@@ -50,7 +50,7 @@ Nginx basic configuration file.
 
 ### Set up SSH authorized keys for jenkins
 
-`jenkins` container 의 [`~/.ssh/jenkins-deploy.pub`](./jenkins/pipeline-ssh-command.md#sshjenkins_deploypub) 를 `deploy` container 에서 `appuser` 사용자의 `~/.ssh/authorized_keys` 에 추가 합니다:
+`jenkins` container 의 [`~/.ssh/jenkins_deploy.pub`](./jenkins/pipeline-ssh-command.md#sshjenkins_deploypub) 를 `deploy` container 에서 `appuser` 사용자의 `~/.ssh/authorized_keys` 에 추가 합니다:
 
 ```bash
 echo 'JENKINS_SSH_PUBLIC_KEY' >> ~/.ssh/authorized_keys
